@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: distributed-scheduler
+  # docker(mysql) 연동
+  datasource:
+    url: jdbc:mysql://localhost:3306/scheduler?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Spring Batch 설정
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+
+  # Quartz 설정
+  quartz:
+    # job 저장 타입 : jdbc vs memory
+    job-store-type: jdbc
+    # 스키마 초기화 여부
+    jdbc:
+      #initialize-schema: always
+      initialize-schema: never
+    # Quartz 스케줄러 설정
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: quartz-scheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            # DB 별 Delegate 가 존재함, mysql의 경우 StdJDBCDelegate
+            driverDelegateClass : org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: true
+            clusterCheckinInterval: 20000
+            misfireThreshold: 60000
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+            threadPriority: 5
+
+  # Shedlock 설정 (SQL, PRD 환경이라면 안하는 걸로)
+#  sql:
+#    init:
+#      mode: always
+#      schema-locations:
+#        - classpath:shedlock-schema.sql
