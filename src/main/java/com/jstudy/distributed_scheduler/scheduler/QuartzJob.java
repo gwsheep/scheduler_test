@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Slf4j
-@Component
+//@Component
 public class QuartzJob implements Job {
 
     @Override
